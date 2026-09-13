@@ -1,0 +1,35 @@
+{
+  "name": "bb-plugin-google-antigravity-acp",
+  "version": "0.2.5",
+  "private": true,
+  "type": "module",
+  "description": "Google Antigravity as a first-class bb agent provider through Antigravity official ACP server.",
+  "engines": {
+    "bb": ">=0.0"
+  },
+  "bb": {
+    "name": "Google Antigravity (ACP)",
+    "description": "Run bb threads on Google Antigravity through its official ACP server (agy_acp_server.exe).",
+    "branding": {
+      "icon": "./icons/google-antigravity.svg"
+    },
+    "server": "./server.ts",
+    "host": "./host.ts"
+  },
+  "keywords": [
+    "bb-plugin"
+  ],
+  "scripts": {
+    "build": "node --conditions=source --import tsx ../../apps/cli/src/index.ts plugin build .",
+    "prepare:bundled": "bb-plugin-build prepare-bundled"
+  },
+  "devDependencies": {
+    "@bb/plugin-build": "workspace:*",
+    "@types/node": "^22.0.0",
+    "typescript": "npm:@typescript/typescript6@^6.0.2"
+  },
+  "dependencies": {
+    "@get-bb/plugin-sdk": "workspace:*",
+    "zod": "^4.3.6"
+  }
+}

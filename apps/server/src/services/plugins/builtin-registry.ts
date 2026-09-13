@@ -129,6 +129,11 @@ export const BUILTIN_PLUGINS = [
     defaultEnabled: true,
   },
   {
+    name: "provider-google-antigravity-acp",
+    pluginId: "google-antigravity-acp",
+    defaultEnabled: true,
+  },
+  {
     name: "keep-awake",
     pluginId: "keep-awake",
     defaultEnabled: true,

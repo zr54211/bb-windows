@@ -1,0 +1,7 @@
+dist/
+node_modules/
+.DS_Store
+
+# global "Icon?" pattern matches the icons/ dir name
+!icons/
+!icons/**
