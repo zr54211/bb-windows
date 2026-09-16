@@ -10,6 +10,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 if (-not $IsWindows) { throw 'This launcher requires Windows.' }
+. (Join-Path $PSScriptRoot 'provider-executables.ps1')
 if ($ServerPort -eq $DaemonPort) { throw 'Server and daemon ports must differ.' }
 $checkout = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $DataDir = [IO.Path]::GetFullPath($DataDir)
@@ -70,9 +71,16 @@ try {
     $env:BB_SERVER_BIND_HOST = if ($Lan) { '0.0.0.0' } else { '127.0.0.1' }
     $env:BB_TELEMETRY = 'false'
     $env:NODE_ENV = 'production'
+    $codexExecutable = Find-CodexExecutable
+    if ($codexExecutable) { $env:PATH = (Split-Path -Parent $codexExecutable) + ';' + $env:PATH }
     $env:PATH = (($env:PATH -split ';' | Select-Object -Unique) -join ';')
+    if (-not $env:BB_CLAUDE_CODE_EXECUTABLE) {
+        $claudeExecutable = Find-ClaudeCodeExecutable
+        if ($claudeExecutable) { $env:BB_CLAUDE_CODE_EXECUTABLE = $claudeExecutable }
+    }
     $nodeCommand = (Get-Command node.exe -ErrorAction Stop).Source
     $logPath = Join-Path $DataDir 'windows-supervisor.log'
+    Add-Content -LiteralPath $logPath -Value "$([DateTime]::UtcNow.ToString('o')) Codex: $($codexExecutable ?? 'unresolved'); Claude Code: $($env:BB_CLAUDE_CODE_EXECUTABLE ?? 'unresolved')"
     while (-not (Test-Path -LiteralPath $stopFile)) {
         $job = [BbWindowsJob]::new()
         $child = [Diagnostics.Process]::new()
