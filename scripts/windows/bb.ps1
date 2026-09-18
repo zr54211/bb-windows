@@ -74,13 +74,14 @@ try {
     $codexExecutable = Find-CodexExecutable
     if ($codexExecutable) { $env:PATH = (Split-Path -Parent $codexExecutable) + ';' + $env:PATH }
     $env:PATH = (($env:PATH -split ';' | Select-Object -Unique) -join ';')
-    if (-not $env:BB_CLAUDE_CODE_EXECUTABLE) {
+    if ([string]::IsNullOrWhiteSpace($env:BB_CLAUDE_CODE_EXECUTABLE)) {
         $claudeExecutable = Find-ClaudeCodeExecutable
         if ($claudeExecutable) { $env:BB_CLAUDE_CODE_EXECUTABLE = $claudeExecutable }
     }
     $nodeCommand = (Get-Command node.exe -ErrorAction Stop).Source
     $logPath = Join-Path $DataDir 'windows-supervisor.log'
-    Add-Content -LiteralPath $logPath -Value "$([DateTime]::UtcNow.ToString('o')) Codex: $($codexExecutable ?? 'unresolved'); Claude Code: $($env:BB_CLAUDE_CODE_EXECUTABLE ?? 'unresolved')"
+    $claudeLogged = if ([string]::IsNullOrWhiteSpace($env:BB_CLAUDE_CODE_EXECUTABLE)) { 'unresolved' } else { $env:BB_CLAUDE_CODE_EXECUTABLE }
+    Add-Content -LiteralPath $logPath -Value "$([DateTime]::UtcNow.ToString('o')) Codex: $($codexExecutable ?? 'unresolved'); Claude Code: $claudeLogged"
     while (-not (Test-Path -LiteralPath $stopFile)) {
         $job = [BbWindowsJob]::new()
         $child = [Diagnostics.Process]::new()
